@@ -6,8 +6,8 @@
 #define LED1 5
 #define LED2 6
 
-char ssid[] = "VMA1968F5";
-char pass[] = "72GrsYvuhtb";
+char ssid[] = "Wifi SSID";
+char pass[] = "Wifi Password";
 
 int status = WL_IDLE_STATUS;
 
