@@ -3,11 +3,16 @@
 #include <SPI.h>
 #include <WiFi.h>
 
+#define LEDPin1 8
+#define LEDPin2 10 
 
-char ssid[] = "WiFi";
-char pass[] = "Password";
+char ssid[] = "wifi";
+char pass[] = "password";
 
 int status = WL_IDLE_STATUS;
+
+unsigned long checkTime = 10000;
+unsigned long startTime = 0;
 
 IPAddress ip;
 IPAddress subnet;
@@ -21,26 +26,45 @@ void setup() {
   WiFi.begin(ssid, pass);
 
   Wire.begin(21, 22);
+
+  pinMode (LEDPin1, OUTPUT);
+  pinMode (LEDPin2, OUTPUT);
   
   lcd.init();
   lcd.backlight();
+
+  startTime = millis();
 }
 
 void loop() {
-  while (WiFi.status() != WL_CONNECTED) {
+
+  unsigned long currentMillis = millis();
+  
+  if (WiFi.status() != WL_CONNECTED && currentMillis - startTime < checkTime) {
     lcd.setCursor(0,0);
     lcd.print("Connecting...");
   }
-  
-  delay(2000);
 
   
   //Show error message if failure to connect  
-  if (WiFi.status() != WL_CONNECTED){
+  if (currentMillis - startTime >= checkTime && WiFi.status() != WL_CONNECTED){
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Failed to connect to network!");
-  } else {
+  lcd.print("Failed to");
+  lcd.setCursor(0,1);
+  lcd.print("connect!");
+
+  digitalWrite(LEDPin2, HIGH);
+  delay(500);
+  digitalWrite(LEDPin2, LOW);
+  delay(500);
+  
+  } 
+
+  if (WiFi.status() == WL_CONNECTED) {
+
+  digitalWrite(LEDPin1, HIGH);
+    
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Connected!");
@@ -51,7 +75,7 @@ void loop() {
   lcd.setCursor(0,1);
   lcd.print("Key: ");
   lcd.print(pass);
-  }
+  
 
   delay (2000);
 
@@ -89,4 +113,5 @@ void loop() {
   lcd.print(gateway);
 
   delay(2000);
-}
+  }
+} 
